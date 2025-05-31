@@ -26,7 +26,7 @@ type Props = {
   getLoggedUser: () => void
 }
 
-const ReportsPage = (props: Props) => {
+const Reports = (props: Props) => {
   const { campaigns, token, user, getCampaigns, getLoggedUser } = props;
 
   useEffect(() => {
@@ -75,4 +75,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   getLoggedUser: () => dispatch(getLoggedUser())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReportsPage);
+export default connect(mapStateToProps, mapDispatchToProps)(Reports);

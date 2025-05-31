@@ -1,5 +1,5 @@
 "use client";
-
+import "../app/globals.css"
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
@@ -16,7 +16,7 @@ type Props = {
   updateUser: (userId: any, updatedUser: any) => void
 };
 
-const AccountPage = ({ user, getLoggedUser, updateUser, token }: Props) => {
+const Account = ({ user, getLoggedUser, updateUser, token }: Props) => {
   useEffect(() => {
     getLoggedUser();
   }, []);
@@ -144,4 +144,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   updateUser: (userId: any, updatedUser: any) => dispatch(updateUser(userId, updatedUser))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AccountPage);
+export default connect(mapStateToProps, mapDispatchToProps)(Account);

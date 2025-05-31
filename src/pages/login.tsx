@@ -23,9 +23,13 @@ const LoginSchema = Yup.object().shape({
   password: Yup.string().min(6, 'Too short!').required('Password is required'),
 });
 
-function LoginPage(props: Props) {
+function Login(props: Props) {
   const router = useRouter()
   const { token, getLoggedUser, loginUser } = props
+
+  useEffect(() => {
+    if(token) router.push('/dashboard')
+  }, [token])
 
   useEffect(() => {
     getLoggedUser()
@@ -167,4 +171,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   getLoggedUser: () => dispatch(getLoggedUser())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

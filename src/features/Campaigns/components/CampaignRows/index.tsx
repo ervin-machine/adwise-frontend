@@ -37,7 +37,7 @@ const CampaignRows = (props: Props) => {
           <button onClick={handleOpenModal}><Edit size={16} /></button>
           <button>{campaign.status === 'Paused' ? <Play size={16} /> : <Pause size={16} />}</button>
         </td>
-        <CampaignModal isOpen={isCampaignModalOpen} onClose={handleCloseModal} isEdit={true} defaultValues={campaign} />
+        <CampaignModal userId={""} isOpen={isCampaignModalOpen} onClose={handleCloseModal} isEdit={true} defaultValues={campaign} />
   </tr>
   )
 }

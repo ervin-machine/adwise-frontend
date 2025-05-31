@@ -17,7 +17,7 @@ type Props = {
   getLoggedUser: () => void
 }
 
-const CampaignsPage = (props: Props) => {
+const Campaigns = (props: Props) => {
   const { campaigns, token, user, getCampaigns, getLoggedUser } = props;
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
@@ -115,4 +115,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   getLoggedUser: () => dispatch(getLoggedUser())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CampaignsPage);
+export default connect(mapStateToProps, mapDispatchToProps)(Campaigns);

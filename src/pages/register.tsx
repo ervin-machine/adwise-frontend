@@ -33,7 +33,7 @@ const validationSchema = Yup.object({
 });
 
 
-function RegisterPage(props: Props) {
+function Register(props: Props) {
   const { token, registerUser, getLoggedUser } = props;
 
   const formik = useFormik<FormValues>({
@@ -212,4 +212,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   getLoggedUser: () => dispatch(getLoggedUser())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegisterPage);
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
