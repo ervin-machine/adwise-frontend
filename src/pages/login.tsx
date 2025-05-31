@@ -60,11 +60,11 @@ function Login(props: Props) {
             onSubmit={(values, { setSubmitting }) => {
               console.log('Form values:', values);
               loginUser(values)
-              router.push('/dashboard')
-              /*setTimeout(() => {
+              
+              setTimeout(() => {
                 setSubmitting(false);
-                window.location.href = "/dashboard"; // simulate redirect
-              }, 500);*/
+                router.push('/dashboard') // simulate redirect
+              }, 3000);
             }}
           >
             {({ isSubmitting }) => (
