@@ -6,7 +6,6 @@ import Header from "@/layouts/Header";
 import LeftSidebar from "@/layouts/LeftSidebar";
 import { Provider } from 'react-redux';
 import { store } from "@/store/configureStore";
-import { div } from "three/examples/jsm/nodes/Nodes.js";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
