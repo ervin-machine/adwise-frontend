@@ -1,14 +1,14 @@
 "use client"
 
 import React from "react";
-import Login from "@/pages/login";
+import Dashboard from "@/pages/dashboard";
 
 type Props = {
 }
 
 const Home = (props: Props) => {
 
-  return <Login />
+  return <Dashboard />
 }
 
 

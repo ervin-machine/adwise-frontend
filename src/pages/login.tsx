@@ -28,10 +28,6 @@ function Login(props: Props) {
   const { token, getLoggedUser, loginUser } = props
 
   useEffect(() => {
-    if(token) router.push('/dashboard')
-  }, [token])
-
-  useEffect(() => {
     getLoggedUser()
   }, [])
 

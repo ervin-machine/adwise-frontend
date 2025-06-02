@@ -1,5 +1,6 @@
 "use client"
 import React, { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import SearchAndFilter from '@/features/Dashboard/components/SearchAndFilter'
@@ -19,6 +20,7 @@ type Props = {
 }
 
 const Dashboard = (props: Props) => {
+  const router = useRouter()
   const { campaigns, token, user, getCampaigns, getLoggedUser } = props;
 
   useEffect(() => {
@@ -26,7 +28,9 @@ const Dashboard = (props: Props) => {
   }, [])
 
   useEffect(() => {
+    console.log(token)
     if(token) getCampaigns(user._id)
+    else router.push('/login')
   }, [token])
 
   return (
