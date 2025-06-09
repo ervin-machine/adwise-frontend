@@ -1,6 +1,7 @@
-"use client"
+'use client'
+
 import React from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from 'formik';
 import { campaignCreate, campaignUpdate } from '../../hooks';
 import * as Yup from 'yup';
 
@@ -9,18 +10,25 @@ const campaignSchema = Yup.object({
   campaignType: Yup.string().required('Required'),
   budget: Yup.number().min(1, 'Must be positive').required('Required'),
   startDate: Yup.date().required('Required'),
-  endDate: Yup.date().min(Yup.ref('startDate'), 'End date must be after start').required('Required'),
+  endDate: Yup.date()
+    .min(Yup.ref('startDate'), 'End date must be after start')
+    .required('Required'),
   confirmed: Yup.boolean().oneOf([true], 'You must confirm'),
+  interests: Yup.string().when('campaignType', {
+    is: (val: string) => val === 'Display' || val === 'Video',
+    then: (schema) => schema.required('Interests required for this type'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
 
 type Props = {
-    defaultValues: any,
-    onClose: () => void,
-    isEdit: boolean,
-    userId: any,
-}
+  defaultValues: any;
+  onClose: () => void;
+  isEdit: boolean;
+  userId: any;
+};
 
-function CampaignForm (props: Props) {
+function CampaignForm(props: Props) {
   const { defaultValues = {}, onClose, isEdit, userId } = props;
 
   const initialValues = {
@@ -30,7 +38,14 @@ function CampaignForm (props: Props) {
     budget: defaultValues.budget || '',
     startDate: defaultValues.startDate || '',
     endDate: defaultValues.endDate || '',
-    targeting: `age: ${defaultValues?.targetingInfo?.age.min} - ${defaultValues?.targetingInfo?.age.max} locations: ${defaultValues?.targetingInfo?.location} interests: ${defaultValues?.targetingInfo?.interests.map((l: any) => l)}` || '',
+    interests: defaultValues?.targetingInfo?.interests?.join(', ') || '',
+    targetingInfo: defaultValues?.targetingInfo || {
+      age: {
+        min:  '',
+        max: '',
+      },
+      location: '', // e.g. "2840,2392"
+    },
     confirmed: false,
     clicks: "0",
     ctr: "0",
@@ -42,12 +57,13 @@ function CampaignForm (props: Props) {
 
   const handleSubmit = (values: any) => {
     console.log("Submitted Campaign:", values);
-    if(isEdit) campaignUpdate(defaultValues._id, values)
-    else campaignCreate(values)
+    if (isEdit) campaignUpdate(defaultValues._id, values);
+    else campaignCreate(values);
+
     setTimeout(() => {
       window.location.reload();
-    }, 3000)
-  };    
+    }, 3000);
+  };
 
   return (
     <div className="p-6">
@@ -57,7 +73,7 @@ function CampaignForm (props: Props) {
         validationSchema={campaignSchema}
         onSubmit={handleSubmit}
       >
-        {() => (
+        {({ values }) => (
           <Form className="space-y-4">
             <div>
               <Field name="campaignName" placeholder="Campaign Name" className="w-full p-2 border rounded" />
@@ -90,10 +106,63 @@ function CampaignForm (props: Props) {
               </div>
             </div>
 
-            <div>
-              <Field as="textarea" name="targeting" placeholder="Targeting info..." className="w-full p-2 border rounded" />
-              <ErrorMessage name="targeting" component="div" className="text-red-500 text-sm" />
-            </div>
+            {/** Dynamic Interests Field */}
+            {(values.campaignType === 'Display' || values.campaignType === 'Video') && (
+              <div>
+                <Field
+                  as="textarea"
+                  name="interests"
+                  placeholder="Enter interests (comma-separated)"
+                  className="w-full p-2 border rounded"
+                />
+                <ErrorMessage name="interests" component="div" className="text-red-500 text-sm" />
+              </div>
+            )}
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Min Age */}
+  <div>
+    <label htmlFor="targetingInfo.age.min" className="block text-sm font-medium text-gray-700">
+      Min Age
+    </label>
+    <Field
+      type="number"
+      name="targetingInfo.age.min"
+      placeholder="e.g. 18"
+      className="w-full p-2 border rounded"
+    />
+    <ErrorMessage name="targetingInfo.age.min" component="div" className="text-red-500 text-sm" />
+  </div>
+
+  {/* Max Age */}
+  <div>
+    <label htmlFor="targetingInfo.age.max" className="block text-sm font-medium text-gray-700">
+      Max Age
+    </label>
+    <Field
+      type="number"
+      name="targetingInfo.age.max"
+      placeholder="e.g. 34"
+      className="w-full p-2 border rounded"
+    />
+    <ErrorMessage name="targetingInfo.age.max" component="div" className="text-red-500 text-sm" />
+  </div>
+
+  {/* Locations */}
+  <div className="md:col-span-2">
+    <label htmlFor="targetingInfo.location" className="block text-sm font-medium text-gray-700">
+      Locations (comma-separated geo codes)
+    </label>
+    <Field
+      type="text"
+      name="targetingInfo.location"
+      placeholder="e.g. 2840,2392"
+      className="w-full p-2 border rounded"
+    />
+    <ErrorMessage name="targetingInfo.location" component="div" className="text-red-500 text-sm" />
+  </div>
+</div>
+
 
             <div className="flex items-center gap-2">
               <Field type="checkbox" name="confirmed" />
@@ -109,7 +178,7 @@ function CampaignForm (props: Props) {
         )}
       </Formik>
     </div>
-  )
+  );
 }
 
 export default CampaignForm;

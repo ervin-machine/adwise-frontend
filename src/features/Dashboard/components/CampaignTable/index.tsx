@@ -23,7 +23,7 @@ const CampaignTable = (props: Props) => {
           </tr>
         </thead>
         <tbody className="text-gray-700">
-          {campaigns.map((c: any, i: any) => (
+          {campaigns?.map((c: any, i: any) => (
             <tr key={i} className="hover:bg-gray-50 border-b">
               <td className="py-3 px-4 font-medium">{c.campaignName}</td>
               <td className="py-3 px-4">
