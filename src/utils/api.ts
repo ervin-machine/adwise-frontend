@@ -7,8 +7,6 @@ const api = axios.create({
   withCredentials: true
 });
 
-console.log(API_URL)
-
 api.interceptors.request.use(
   (config) => {
     const token = store.getState().account.token;

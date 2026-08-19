@@ -1,6 +1,7 @@
-import { userLogin, userRegister, googleLogin, userLogout, getMe, userUpdate } from '../../hooks';
+import { userLogin, userRegister, googleLogin, userLogout, getMe, userUpdate, updateAdsConnection } from '../../hooks';
 import { types } from "../constants";
 import { Dispatch } from 'redux';
+import getErrorMessage from '@/utils/getErrorMessage';
 
 // --- Define interfaces ---
 
@@ -58,10 +59,11 @@ export const registerUser = (newUser: RegisterData) => {
       const { tokens, user } = response.data;
 
       dispatch(authSuccess(types.REGISTER_USER_SUCCESS, { token: tokens.access, user }));
+      return { success: true };
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Registration failed";
+      const errorMessage = getErrorMessage(err, "Registration failed");
       dispatch(authFailure(types.REGISTER_USER_FAILURE, errorMessage));
+      return { success: false, error: errorMessage };
     }
   };
 };
@@ -74,10 +76,11 @@ export const loginUser = (existingUser: LoginCredentials) => {
       const { tokens, user } = response.data;
 
       dispatch(authSuccess(types.LOGIN_USER_SUCCESS, { token: tokens.access, user }));
+      return { success: true };
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Login failed";
+      const errorMessage = getErrorMessage(err, "Login failed");
       dispatch(authFailure(types.LOGIN_USER_FAILURE, errorMessage));
+      return { success: false, error: errorMessage };
     }
   };
 };
@@ -91,9 +94,25 @@ export const updateUser = (userId: any, updatedUser: any) => {
 
       dispatch(authSuccess(types.UPDATE_USER_SUCCESS, { user }));
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Update failed";
+      const errorMessage = getErrorMessage(err, "Update failed");
       dispatch(authFailure(types.UPDATE_USER_FAILURE, errorMessage));
+    }
+  };
+};
+
+export const toggleAdsConnection = (connected: boolean) => {
+  return async (dispatch: Dispatch) => {
+    dispatch(authRequest(types.UPDATE_USER_REQUEST));
+    try {
+      const response = await updateAdsConnection(connected) as { data: { user: User } };
+      const { user } = response.data;
+
+      dispatch(authSuccess(types.UPDATE_USER_SUCCESS, { user }));
+      return { success: true };
+    } catch (err: any) {
+      const errorMessage = getErrorMessage(err, "Failed to update Google Ads connection");
+      dispatch(authFailure(types.UPDATE_USER_FAILURE, errorMessage));
+      return { success: false, error: errorMessage };
     }
   };
 };
@@ -106,10 +125,11 @@ export const googleAuth = (credential: string) => {
       const { tokens, user } = response.data;
 
       dispatch(authSuccess(types.LOGIN_USER_SUCCESS, { token: tokens.access, user }));
+      return { success: true };
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Google login failed";
+      const errorMessage = getErrorMessage(err, "Google login failed");
       dispatch(authFailure(types.LOGIN_USER_FAILURE, errorMessage));
+      return { success: false, error: errorMessage };
     }
   };
 };
@@ -129,16 +149,13 @@ export const getLoggedUser = () => {
   return async (dispatch: Dispatch) => {
     dispatch(authRequest(types.LOGIN_USER_REQUEST));
     try {
-     
       const response = await getMe() as { data: { access: Tokens; user: User } };
-      console.log(response)
       const { access, user } = response.data;
 
       dispatch(authSuccess(types.LOGIN_USER_SUCCESS, { token: access.token, user }));
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Failed to fetch user";
-      dispatch(authFailure(types.LOGIN_USER_FAILURE, errorMessage));
+      const errorMessage = getErrorMessage(err, "Failed to fetch user");
+      dispatch(authFailure(types.CHECK_AUTH_FAILURE, errorMessage));
     }
   };
 };

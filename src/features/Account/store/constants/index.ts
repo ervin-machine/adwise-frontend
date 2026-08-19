@@ -7,6 +7,11 @@ export const types = {
     LOGIN_USER_SUCCESS: 'LOGIN_USER_SUCCESS',
     LOGIN_USER_FAILURE: 'LOGIN_USER_FAILURE',
 
+    // Dispatched by the silent "am I already logged in?" check that runs on
+    // every page - having no session yet is normal, not a user-facing error,
+    // so it's kept separate from LOGIN_USER_FAILURE (a real failed login attempt).
+    CHECK_AUTH_FAILURE: 'CHECK_AUTH_FAILURE',
+
     UPDATE_USER_REQUEST: 'UPDATE_USER_REQUEST',
     UPDATE_USER_SUCCESS: 'UPDATE_USER_SUCCESS',
     UPDATE_USER_FAILURE: 'UPDATE_USER_FAILURE',

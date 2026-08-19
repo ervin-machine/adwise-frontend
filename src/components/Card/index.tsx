@@ -10,12 +10,14 @@ type Props = {
 const Card = (props: Props) => {
   const { title, value, text, textColor } = props
   return (
-    <div className="p-4 bg-white shadow rounded text-center">
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-lg font-bold">{value}</p>
-      <p className={`text-sm ${textColor}`}>
-            {text}
-      </p>
+    <div className="p-4 bg-white border border-slate-200 shadow-sm rounded-xl text-center">
+      <p className="text-sm text-slate-500">{title}</p>
+      <p className="text-2xl font-semibold text-slate-900 mt-1 tabular-nums">{value}</p>
+      {text && (
+        <p className={`text-sm mt-1 ${textColor || 'text-slate-400'}`}>
+          {text}
+        </p>
+      )}
     </div>
   )
 }

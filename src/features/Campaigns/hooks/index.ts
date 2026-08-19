@@ -9,7 +9,7 @@ export const campaignsGet = (userId: any) => {
 }
 
 export const campaignUpdate = (campaignId: any, updatedCampaign: any) => {
-    return api.put(`campaign/${campaignId}`, { updatedCampaign });
+    return api.put(`campaign/${campaignId}`, updatedCampaign);
 }
 
 export const campaignDelete = (campaignId: any) => {
@@ -22,4 +22,12 @@ export const campaignGenerateAd = (describeProduct: any, targetAudience: any) =>
 
 export const generateCSV = (campaigns: any) => {
     return api.post('campaign/export-csv', campaigns, { responseType: 'blob' });
+}
+
+export const getCampaignMetrics = (days: number = 30) => {
+    return api.get('campaign/metrics', { params: { days } });
+}
+
+export const syncCampaignMetrics = () => {
+    return api.post('campaign/sync-metrics');
 }

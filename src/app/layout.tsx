@@ -1,7 +1,7 @@
 "use client"
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import React from "react";
+import React, { useState } from "react";
 import Header from "@/layouts/Header";
 import LeftSidebar from "@/layouts/LeftSidebar";
 import { Provider } from 'react-redux';
@@ -22,22 +22,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Provider store={store}>
-        <div className="flex">
-          <LeftSidebar />
-          <div className="flex-1 bg-gray-50 min-h-screen p-6">
-            <Header />
-            
-              <div className="mt-4">
+          <div className="flex min-h-screen bg-slate-50">
+            <LeftSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+            <div className="flex-1 min-w-0">
+              <Header onMenuClick={() => setIsSidebarOpen(true)} />
+              <main className="p-4 md:p-6">
                 {children}
-              </div>
+              </main>
+            </div>
           </div>
-        </div>
         </Provider>
       </body>
     </html>

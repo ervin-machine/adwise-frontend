@@ -27,6 +27,9 @@ const accountReducer = (state = initialState, action: any) =>
                 draft.isLoading = false;
                 draft.error = action.payload;
                 break;
+            case types.CHECK_AUTH_FAILURE:
+                draft.isLoading = false;
+                break;
             case types.UPDATE_USER_REQUEST:
                 draft.isLoading = true;
                 break;

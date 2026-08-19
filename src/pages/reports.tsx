@@ -1,14 +1,14 @@
 "use client"
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import StatsCards from '@/features/Reports/components/StatsCards'
 import SearchAndFilter from '@/features/Reports/components/SearchAndFilter'
-//import PerfomanceChart from '@/features/Reports/components/PerfomanceChart'
 import ReportsTable from '@/features/Reports/components/ReportsTable'
-import { generateCSV } from '@/features/Campaigns/hooks';
-import { selectCampaigns } from '@/features/Campaigns/store/selectors';
+import { generateCSV, getCampaignMetrics } from '@/features/Campaigns/hooks';
+import { selectCampaigns, selectIsLoading } from '@/features/Campaigns/store/selectors';
 import { getCampaigns } from '@/features/Campaigns/store/actions';
 import { getLoggedUser } from '@/features/Account/store/actions';
 import { selectToken, selectUser } from '@/features/Account/store/selectors';
@@ -18,26 +18,49 @@ const PerformanceChart = dynamic(() => import('@/features/Reports/components/Per
   ssr: false,
 });
 
+type MetricPoint = {
+  date: string
+  impressions: number
+  clicks: number
+  cost: number
+  conversions: number
+}
+
 type Props = {
   campaigns: any,
+  isLoading: boolean,
   token: any,
   user: any,
   getCampaigns: (userId: any) => void,
-  getLoggedUser: () => void
+  getLoggedUser: () => Promise<any>
 }
 
 const Reports = (props: Props) => {
-  const { campaigns, token, user, getCampaigns, getLoggedUser } = props;
+  const router = useRouter();
+  const { campaigns, isLoading, token, user, getCampaigns, getLoggedUser } = props;
+  const [metrics, setMetrics] = useState<MetricPoint[]>([]);
+  const [metricsLoading, setMetricsLoading] = useState(true);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    getLoggedUser()
+    let cancelled = false;
+    getLoggedUser().then(() => {
+      if (!cancelled) setCheckingAuth(false);
+    });
+    return () => { cancelled = true; };
   }, [])
 
   useEffect(() => {
-    if(token) {
-      getCampaigns(user._id)
-    } 
-  }, [token])
+    if (checkingAuth) return;
+    if (!token) { router.push('/login'); return; }
+    getCampaigns(user._id)
+
+    setMetricsLoading(true);
+    getCampaignMetrics(30)
+      .then((res) => setMetrics(res.data))
+      .catch(() => setMetrics([]))
+      .finally(() => setMetricsLoading(false));
+  }, [checkingAuth, token])
 
   const handleGenerateCSV = async () => {
     const response = await generateCSV(campaigns)
@@ -53,24 +76,22 @@ const Reports = (props: Props) => {
   }
   return (
     token && <>
-        <StatsCards />
+        <StatsCards metrics={metrics} />
         <SearchAndFilter generateCSV={handleGenerateCSV} />
-        <PerformanceChart campaigns={campaigns} />
-        <ReportsTable reports={campaigns} />
+        {!metricsLoading && <PerformanceChart metrics={metrics} />}
+        <ReportsTable reports={campaigns} isLoading={isLoading} />
     </>
   )
 }
 
 const mapStateToProps = createStructuredSelector({
   campaigns: selectCampaigns(),
+  isLoading: selectIsLoading(),
   token: selectToken(),
   user: selectUser()
-  //user: selectUser(),
-  //error: selectError()
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-  generateCSV: (campaigns: any) => dispatch(generateCSV(campaigns)),
   getCampaigns: (userId: any) => dispatch(getCampaigns(userId)),
   getLoggedUser: () => dispatch(getLoggedUser())
 });

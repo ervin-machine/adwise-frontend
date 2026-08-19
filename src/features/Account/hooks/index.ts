@@ -28,3 +28,15 @@ export const refreshToken = () => {
 export const getMe = () => {
     return api.get('auth/me');
 }
+
+export const updateAdsConnection = (connected: boolean) => {
+    return api.patch('users/me/ads-connection', { connected });
+}
+
+export const forgotPassword = (email: string) => {
+    return api.post('auth/forgot-password', { email });
+}
+
+export const resetPassword = (token: string, password: string) => {
+    return api.post('auth/reset-password', { token, password });
+}

@@ -1,6 +1,7 @@
 import { campaignCreate, campaignsGet } from '../../hooks';
 import { types } from "../constants";
 import { Dispatch } from 'redux';
+import getErrorMessage from '@/utils/getErrorMessage';
 
 // --- Define interfaces ---
 
@@ -59,8 +60,7 @@ export const createCampaign = (newCampaign: any) => {
 
       dispatch(campaignSuccess(types.CREATE_CAMPAIGN_SUCCESS, { campaign }));
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Creation campaign failed";
+      const errorMessage = getErrorMessage(err, "Creation campaign failed");
       dispatch(campaignFailure(types.CREATE_CAMPAIGN_FAILURE, errorMessage));
     }
   };
@@ -71,13 +71,11 @@ export const getCampaigns = (userId: any) => {
     dispatch(campaignRequest(types.GET_CAMPAIGNS_REQUEST));
     try {
       const response = await campaignsGet(userId) as { data: any };
-      console.log(response)
       const campaigns = response.data;
 
       dispatch(campaignSuccess(types.GET_CAMPAIGNS_SUCCESS, { campaigns }));
     } catch (err: any) {
-      const match = err?.response?.data?.match(/Error: (.*?)<br>/);
-      const errorMessage = match ? match[1] : "Get campaigns failed";
+      const errorMessage = getErrorMessage(err, "Get campaigns failed");
       dispatch(campaignFailure(types.GET_CAMPAIGNS_FAILURE, errorMessage));
     }
   };

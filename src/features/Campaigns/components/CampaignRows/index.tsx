@@ -1,43 +1,65 @@
 "use client"
 import React, { useState } from 'react'
-import { Delete, Edit, Pause, Play } from 'lucide-react';
+import { Trash2, Pencil, Pause, Play } from 'lucide-react';
 import CampaignModal from '../CreateCampaign/components/CampaignModal';
+import StatusBadge from '@/components/Badge';
+import convertDate from '@/utils/convertDate';
 import { campaignDelete } from '../../hooks';
 
 type Props = {
-    campaign: any
+    campaign: any,
+    userId: any
 }
 
+const iconButtonClass =
+  'h-8 w-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500';
+
 const CampaignRows = (props: Props) => {
-  const { campaign } = props;
+  const { campaign, userId } = props;
   const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false)
-  console.log(campaign)
+  const status = (campaign.status || '').toLowerCase();
 
   const handleOpenModal = () => setIsCampaignModalOpen(true)
   const handleCloseModal = () => setIsCampaignModalOpen(false)
 
+  const handleDelete = () => {
+    if (window.confirm(`Delete "${campaign.campaignName}"? This can't be undone.`)) {
+      campaignDelete(campaign._id);
+    }
+  };
+
   return (
-    <tr className="border-b">
-        <td className="px-4 py-3 font-medium">{campaign.campaignName}</td>
+    <tr className="border-b border-slate-100 hover:bg-slate-50">
+        <td className="px-4 py-3 font-medium text-slate-900">{campaign.campaignName}</td>
         <td className="px-4 py-3">
-          <span className={`px-2 py-1 text-xs rounded-full ${campaign.status === 'Active' ? 'bg-green-100 text-green-800' : campaign.status === 'Paused' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-200 text-gray-700'}`}>
-            {campaign.status}
-          </span>
+          <StatusBadge status={campaign.status} />
         </td>
         <td className="px-4 py-3">
-          <span className="text-xs bg-gray-100 px-2 py-1 rounded">{campaign.campaignType}</span>
+          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">{campaign.campaignType}</span>
         </td>
         <td className="px-4 py-3">{campaign.budget}</td>
-        <td className="px-4 py-3">{campaign.startDate}</td>
-        <td className="px-4 py-3">{campaign.endDate}</td>
+        <td className="px-4 py-3">{campaign.startDate ? convertDate(campaign.startDate) : '—'}</td>
+        <td className="px-4 py-3">{campaign.endDate ? convertDate(campaign.endDate) : '—'}</td>
         <td className="px-4 py-3">{campaign.clicks}</td>
         <td className="px-4 py-3">{campaign.impressions}</td>
-        <td className="px-4 py-3 flex gap-2">
-          <button onClick={() => campaignDelete(campaign._id)}><Delete size={16} /></button>
-          <button onClick={handleOpenModal}><Edit size={16} /></button>
-          <button>{campaign.status === 'Paused' ? <Play size={16} /> : <Pause size={16} />}</button>
+        <td className="px-4 py-3">
+          <div className="flex gap-1">
+            <button type="button" onClick={handleDelete} aria-label={`Delete ${campaign.campaignName}`} className={iconButtonClass}>
+              <Trash2 size={16} />
+            </button>
+            <button type="button" onClick={handleOpenModal} aria-label={`Edit ${campaign.campaignName}`} className={iconButtonClass}>
+              <Pencil size={16} />
+            </button>
+            <button
+              type="button"
+              aria-label={status === 'paused' ? `Resume ${campaign.campaignName}` : `Pause ${campaign.campaignName}`}
+              className={iconButtonClass}
+            >
+              {status === 'paused' ? <Play size={16} /> : <Pause size={16} />}
+            </button>
+          </div>
         </td>
-        <CampaignModal userId={""} isOpen={isCampaignModalOpen} onClose={handleCloseModal} isEdit={true} defaultValues={campaign} />
+        <CampaignModal userId={userId} isOpen={isCampaignModalOpen} onClose={handleCloseModal} isEdit={true} defaultValues={campaign} />
   </tr>
   )
 }

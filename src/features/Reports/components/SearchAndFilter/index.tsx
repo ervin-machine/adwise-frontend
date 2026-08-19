@@ -1,4 +1,6 @@
 import React from 'react'
+import { Select } from '@/components/Input'
+import Button from '@/components/Button'
 
 type Props = {
   generateCSV: () => void;
@@ -7,21 +9,21 @@ type Props = {
 const SearchAndFilter = (props: Props) => {
   const { generateCSV } = props;
   return (
-    <div className="flex flex-wrap gap-4 items-center justify-between mb-4">
-      <div className="flex gap-2 flex-wrap">
-        <select className="border p-2 rounded">
-          <option>Last 7 Days</option>
-        </select>
-        <select className="border p-2 rounded">
-          <option>All Campaigns</option>
-        </select>
-        <select className="border p-2 rounded">
-          <option>Date (Newest)</option>
-        </select>
+    <div className="flex flex-wrap gap-3 items-center justify-between mb-4">
+      <div className="flex gap-3 flex-wrap">
+        <Select aria-label="Date range" defaultValue="last7">
+          <option value="last7">Last 7 Days</option>
+        </Select>
+        <Select aria-label="Campaign" defaultValue="all">
+          <option value="all">All Campaigns</option>
+        </Select>
+        <Select aria-label="Sort" defaultValue="newest">
+          <option value="newest">Date (Newest)</option>
+        </Select>
       </div>
-      <button onClick={generateCSV} className="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
+      <Button variant="secondary" onClick={generateCSV}>
         Export CSV
-      </button>
+      </Button>
     </div>
   )
 }
