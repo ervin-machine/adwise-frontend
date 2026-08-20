@@ -60,9 +60,18 @@ function CampaignForm(props: Props) {
 
   const handleSubmit = async (values: any, { setSubmitting }: { setSubmitting: (v: boolean) => void }) => {
     setSubmitError(null);
+    const payload = {
+      ...values,
+      targetingInfo: {
+        ...values.targetingInfo,
+        interests: values.interests
+          ? values.interests.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : [],
+      },
+    };
     try {
-      if (isEdit) await campaignUpdate(defaultValues._id, values);
-      else await campaignCreate(values);
+      if (isEdit) await campaignUpdate(defaultValues._id, payload);
+      else await campaignCreate(payload);
       onClose();
       window.location.reload();
     } catch (err: any) {
@@ -123,7 +132,7 @@ function CampaignForm(props: Props) {
                 <Field
                   as="textarea"
                   name="interests"
-                  placeholder="Enter interests (comma-separated)"
+                  placeholder="Enter keywords (comma-separated)"
                   className={fieldClasses}
                 />
                 <ErrorMessage name="interests" component="div" className="text-red-500 text-sm mt-1" />
