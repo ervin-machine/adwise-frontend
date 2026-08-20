@@ -4,7 +4,7 @@ import { Trash2, Pencil, Pause, Play } from 'lucide-react';
 import CampaignModal from '../CreateCampaign/components/CampaignModal';
 import StatusBadge from '@/components/Badge';
 import convertDate from '@/utils/convertDate';
-import { campaignDelete } from '../../hooks';
+import { campaignDelete, campaignUpdateStatus } from '../../hooks';
 
 type Props = {
     campaign: any,
@@ -17,6 +17,7 @@ const iconButtonClass =
 const CampaignRows = (props: Props) => {
   const { campaign, userId } = props;
   const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false)
+  const [isTogglingStatus, setIsTogglingStatus] = useState(false)
   const status = (campaign.status || '').toLowerCase();
 
   const handleOpenModal = () => setIsCampaignModalOpen(true)
@@ -25,6 +26,17 @@ const CampaignRows = (props: Props) => {
   const handleDelete = () => {
     if (window.confirm(`Delete "${campaign.campaignName}"? This can't be undone.`)) {
       campaignDelete(campaign._id);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    setIsTogglingStatus(true);
+    try {
+      await campaignUpdateStatus(campaign._id, status === 'paused' ? 'active' : 'paused');
+      window.location.reload();
+    } catch {
+      alert('Failed to update campaign status. Please try again.');
+      setIsTogglingStatus(false);
     }
   };
 
@@ -52,8 +64,10 @@ const CampaignRows = (props: Props) => {
             </button>
             <button
               type="button"
+              onClick={handleToggleStatus}
+              disabled={isTogglingStatus}
               aria-label={status === 'paused' ? `Resume ${campaign.campaignName}` : `Pause ${campaign.campaignName}`}
-              className={iconButtonClass}
+              className={`${iconButtonClass} disabled:opacity-50`}
             >
               {status === 'paused' ? <Play size={16} /> : <Pause size={16} />}
             </button>

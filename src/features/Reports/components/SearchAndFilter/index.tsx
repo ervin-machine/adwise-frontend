@@ -4,10 +4,11 @@ import Button from '@/components/Button'
 
 type Props = {
   generateCSV: () => void;
+  generatePDF: () => void;
 }
 
 const SearchAndFilter = (props: Props) => {
-  const { generateCSV } = props;
+  const { generateCSV, generatePDF } = props;
   return (
     <div className="flex flex-wrap gap-3 items-center justify-between mb-4">
       <div className="flex gap-3 flex-wrap">
@@ -21,9 +22,14 @@ const SearchAndFilter = (props: Props) => {
           <option value="newest">Date (Newest)</option>
         </Select>
       </div>
-      <Button variant="secondary" onClick={generateCSV}>
-        Export CSV
-      </Button>
+      <div className="flex gap-2">
+        <Button variant="secondary" onClick={generateCSV}>
+          Export CSV
+        </Button>
+        <Button variant="secondary" onClick={generatePDF}>
+          Export PDF
+        </Button>
+      </div>
     </div>
   )
 }

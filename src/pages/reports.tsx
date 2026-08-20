@@ -13,6 +13,7 @@ import { getCampaigns } from '@/features/Campaigns/store/actions';
 import { getLoggedUser } from '@/features/Account/store/actions';
 import { selectToken, selectUser } from '@/features/Account/store/selectors';
 import dynamic from 'next/dynamic';
+import exportReportPdf from '@/utils/exportReportPdf';
 
 const PerformanceChart = dynamic(() => import('@/features/Reports/components/PerfomanceChart'), {
   ssr: false,
@@ -74,10 +75,14 @@ const Reports = (props: Props) => {
     a.click()
     document.body.removeChild(a)
   }
+
+  const handleGeneratePDF = () => {
+    exportReportPdf(campaigns, metrics)
+  }
   return (
     token && <>
         <StatsCards metrics={metrics} />
-        <SearchAndFilter generateCSV={handleGenerateCSV} />
+        <SearchAndFilter generateCSV={handleGenerateCSV} generatePDF={handleGeneratePDF} />
         {!metricsLoading && <PerformanceChart metrics={metrics} />}
         <ReportsTable reports={campaigns} isLoading={isLoading} />
     </>

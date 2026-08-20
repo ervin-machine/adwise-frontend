@@ -16,6 +16,10 @@ export const campaignDelete = (campaignId: any) => {
     return api.delete(`campaign/${campaignId}`);
 }
 
+export const campaignUpdateStatus = (campaignId: any, status: 'active' | 'paused') => {
+    return api.patch(`campaign/${campaignId}/status`, { status });
+}
+
 export const campaignGenerateAd = (describeProduct: any, targetAudience: any) => {
     return api.post('campaign/generatead', {describeProduct, targetAudience});
 }
